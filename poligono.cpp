@@ -1,12 +1,16 @@
 #include "poligono.h"
 #include "math.h"
+#include <iostream>
 
-Poligono::Poligono(int x, int y, int raio, int lados,SDL_Color cor) :
+Poligono::Poligono(int x, int y, int raio, int lados, int vx, int vy, SDL_Color cor) :
     lados{lados},
     center_x{x},
     center_y{y},
     raio{raio},
-    cor{cor}
+    cor{cor},
+    velocidadeX{vx},
+    velocidadeY{vy},
+    aceleracao{0}
 {}
 
 void Poligono::draw(Window &w) {
@@ -34,26 +38,39 @@ void Poligono::draw(Window &w) {
 
 }
 
-void Poligono::translate(int x, int y, Window &w) {
+void Poligono::translate(Window &w, int dt) {
 
-    //Ifs server para limitar ao tamanho da janela
-    if (center_x + raio + x < w.width && center_x - raio + x > 0){
-        center_x += x;
+    center_x += velocidadeX * 1; //dt
+    center_y += velocidadeY * 1; //dt
+
+
+    //Ifs server para limitar ao tamanho da janela / bater com o limite
+    if (center_x - raio < 0 || center_x + raio > w.width) {
+        // Inverta a velocidade no eixo X para simular a reflexão na parede
+        velocidadeX *= -1;
     }
-
-    if (center_y + raio + y < w.height && center_y - raio + y > 0){
-        center_y += y;
+    
+    // Verifique a colisão com as paredes superior e inferior
+    if (center_y - raio < 0 || center_y + raio > w.height) {
+        // Inverta a velocidade no eixo Y para simular a reflexão na parede
+        velocidadeY *= -1;
     }
 }
 
-bool Poligono::colide(Poligono p)
+bool Poligono::colide(Poligono &p)
 {
-    if ( 
-        p.center_x + center_x <= p.raio + raio ||
-        p.center_y + center_y <= p.raio + raio 
-    ) {
-        return true;
-    }
+    float delta_x = center_x - p.center_x;
+    float delta_y = center_y - p.center_y;
 
-    return false;
+    float distancia = sqrt(delta_x * delta_x + delta_y * delta_y);
+
+    return distancia <= (p.raio + raio);
+}
+
+
+void Poligono::setVelocidadeX(double v){
+    velocidadeX *= -1;
+}
+void Poligono::setVelocidadeY(double v){
+    velocidadeY *= -1;
 }

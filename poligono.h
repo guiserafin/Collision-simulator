@@ -13,13 +13,16 @@ class Poligono {
         int raio;
         SDL_Color cor;
 
-        Poligono(int x, int y, int raio, int lados,SDL_Color cor);
+        Poligono(int x, int y, int raio, int lados, int vx, int vy, SDL_Color cor);
         void draw(Window &w);
-        void translate(int x, int y, Window &w);
-        bool colide(Poligono p);
+        void translate(Window &w, int dt);
+        bool colide(Poligono &p);
+        void setVelocidadeX(double variacao);
+        void setVelocidadeY(double variacao);
     private:
         double aceleracao;
-        double velocidade;
+        double velocidadeX;
+        double velocidadeY;
 };
 
 #endif
