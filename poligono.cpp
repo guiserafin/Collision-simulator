@@ -43,6 +43,15 @@ void Poligono::translate(Window &w, int dt) {
     center_x += velocidadeX * 1; //dt
     center_y += velocidadeY * 1; //dt
 
+    float friction = 0.01;  // Ajuste o coeficiente de atrito do ar conforme necessário
+    if (velocidadeX > 0.0) {
+        velocidadeX -= (friction * velocidadeX);
+    }
+
+    if (velocidadeY > 0){
+        velocidadeY -= (friction * velocidadeY);
+
+    }
 
     //Ifs server para limitar ao tamanho da janela / bater com o limite
     if (center_x - raio < 0 || center_x + raio > w.width) {
@@ -57,20 +66,48 @@ void Poligono::translate(Window &w, int dt) {
     }
 }
 
-bool Poligono::colide(Poligono &p)
+bool Poligono::colide(Poligono * p)
 {
-    float delta_x = center_x - p.center_x;
-    float delta_y = center_y - p.center_y;
+    float delta_x = center_x - p->center_x;
+    float delta_y = center_y - p->center_y;
 
     float distancia = sqrt(delta_x * delta_x + delta_y * delta_y);
 
-    return distancia <= (p.raio + raio);
+    return distancia <= (p->raio + raio);
 }
 
 
 void Poligono::setVelocidadeX(double v){
-    velocidadeX *= -1;
+    velocidadeX = v;
 }
 void Poligono::setVelocidadeY(double v){
-    velocidadeY *= -1;
+    velocidadeY = v;
+}
+
+/**
+ * @return retorna o quanto um circulo ultrapassou o outro
+*/
+float Poligono::getDistancia(Poligono * p){
+
+    float delta_x = center_x - p->center_x;
+    float delta_y = center_y - p->center_y;
+
+    float distancia = sqrt(delta_x * delta_x + delta_y * delta_y);
+
+    float result = (raio + p->raio) - distancia;
+
+    if (result < 0)
+        result *=-1;
+    
+    return result;
+}
+
+void Poligono::setX(double dx)
+{
+    center_x += dx;
+}
+
+void Poligono::setY(double dy)
+{
+    center_y += dy;
 }
